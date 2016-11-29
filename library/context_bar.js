@@ -5,7 +5,6 @@ var contextBar;
   // -- contextBarItem --
   contextBarItem = function(name) {
     this.name = name;
-    this.region = [[0,0],[100,0],[100,100],[0,100]];
   }
 
   contextBarItem.prototype.setRegion = function(left, right) {
@@ -16,6 +15,22 @@ var contextBar;
     if (this.isAdded == 1) {
       this.parentContextBar.update();
     }
+  }
+
+  contextBarItem.prototype.getLeftRegionVertex = function(index) {
+      if (typeof this.regionLeft[index] == 'function') {
+        return this.regionLeft[index]();
+      } else {
+        return this.regionLeft[index];
+      }
+  }
+
+  contextBarItem.prototype.getRightRegionVertex = function(index) {
+      if (typeof this.regionRight[index] == 'function') {
+        return this.regionRight[index]();
+      } else {
+        return this.regionRight[index];
+      }
   }
 
   // -- contextBar --
@@ -37,8 +52,8 @@ var contextBar;
       // TODO: we do lots of duplicate stuff for left then right. should be refactored.
 
       // if we are below the last vertex, item shouldn't exist on the bar -- 0 width
-      if (cbBottom > item.regionLeft[item.regionLeft.length-1][1] ||
-          cbBottom > item.regionRight[item.regionRight.length-1][1]) {
+      if (cbBottom > item.getLeftRegionVertex(item.regionLeft.length-1)[1] ||
+          cbBottom > item.getRightRegionVertex(item.regionRight.length-1)[1]) {
         left = 0;
         width = 0;
       } else {
@@ -49,7 +64,9 @@ var contextBar;
         var rightAboveVertexIndex = -1;
 
         var lowesty = -1;
-        $.each(item.regionLeft, function(i, vertex) {
+        $.each(item.regionLeft, function(i, vert) {
+          var vertex = item.getLeftRegionVertex(i);
+
           if (cbBottom >= vertex[1]) {
             if (lowesty == -1) {
               lowesty = vertex[1];
@@ -62,7 +79,10 @@ var contextBar;
         });
 
         lowesty = -1;
-        $.each(item.regionRight, function(i, vertex) {
+        $.each(item.regionRight, function(i, vert) {
+          var vertex = item.getRightRegionVertex(i);
+
+
           if (cbBottom >= vertex[1]) {
             if (lowesty == -1) {
               lowesty = vertex[1];
@@ -75,14 +95,14 @@ var contextBar;
         });
 
         // if we're on top of a vertex, just use it's x value. otherwise, interpolate between above and below vertex
-        if (cbBottom == item.regionLeft[leftAboveVertexIndex][1]) {
-          left = item.regionLeft[leftAboveVertexIndex][0];
+        if (cbBottom == item.getLeftRegionVertex(leftAboveVertexIndex)[1]) {
+          left = item.getLeftRegionVertex(leftAboveVertexIndex)[0];
         } else {
-          var aboveVertexX = item.regionLeft[leftAboveVertexIndex][0];
-          var aboveVertexY = item.regionLeft[leftAboveVertexIndex][1];
+          var aboveVertexX = item.getLeftRegionVertex(leftAboveVertexIndex)[0];
+          var aboveVertexY = item.getLeftRegionVertex(leftAboveVertexIndex)[1];
 
-          var belowVertexX = item.regionLeft[leftAboveVertexIndex+1][0];
-          var belowVertexY = item.regionLeft[leftAboveVertexIndex+1][1];
+          var belowVertexX = item.getLeftRegionVertex(leftAboveVertexIndex+1)[0];
+          var belowVertexY = item.getLeftRegionVertex(leftAboveVertexIndex+1)[1];
 
           var downFromThisVertex = cbBottom-aboveVertexY;
           var travelMultiplier = downFromThisVertex/(belowVertexY-aboveVertexY);
@@ -91,14 +111,14 @@ var contextBar;
           left = aboveVertexX+offsetFromThisVertex;
         }
 
-        if (cbBottom == item.regionRight[rightAboveVertexIndex][1]) {
-          width = item.regionRight[rightAboveVertexIndex][0]-left;
+        if (cbBottom == item.getRightRegionVertex(rightAboveVertexIndex)[1]) {
+          width = item.getRightRegionVertex(rightAboveVertexIndex)[0]-left;
         } else {
-          var aboveVertexX = item.regionRight[rightAboveVertexIndex][0];
-          var aboveVertexY = item.regionRight[rightAboveVertexIndex][1];
+          var aboveVertexX = item.getRightRegionVertex(rightAboveVertexIndex)[0];
+          var aboveVertexY = item.getRightRegionVertex(rightAboveVertexIndex)[1];
 
-          var belowVertexX = item.regionRight[rightAboveVertexIndex+1][0];
-          var belowVertexY = item.regionRight[rightAboveVertexIndex+1][1];
+          var belowVertexX = item.getRightRegionVertex(rightAboveVertexIndex+1)[0];
+          var belowVertexY = item.getRightRegionVertex(rightAboveVertexIndex+1)[1];
 
           var downFromThisVertex = cbBottom-aboveVertexY;
           var travelMultiplier = downFromThisVertex/(belowVertexY-aboveVertexY);

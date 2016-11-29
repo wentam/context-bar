@@ -8,8 +8,8 @@ function init() {
   var cb_item_1 = new contextBarItem("Right item");
   cb_item_1.setRegion(
                       // left side
-                      [[$('#item_1').offset().left, $('#item_1').offset().top],
-                       [$('#item_1').offset().left, $('#item_1').offset().top+$('#item_1').height()]],
+                      [function(){return [$('#item_1').offset().left, $('#item_1').offset().top];},
+                       function(){return [$('#item_1').offset().left, $('#item_1').offset().top+$('#item_1').height()];}],
 
                       // right side
                       [[$(window).width(), $('#item_1').offset().top],
