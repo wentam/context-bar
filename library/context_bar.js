@@ -2,6 +2,61 @@ var contextBarItem;
 var contextBar;
 
 (function ($) {
+  // -- private functions --
+  var getRegionVertex = function(region, index) {
+    if (typeof region[index] == 'function') {
+      return region[index]();
+    } else {
+      return region[index];
+    }
+  }
+
+  var getClosestVertexAbovePoint = function(region,y) {
+    var aboveVertexIndex = -1;
+
+    var lowesty = -1;
+    $.each(region, function(i, vert) {
+      var vertex = getRegionVertex(region, i);
+
+      if (y >= vertex[1]) {
+        if (lowesty == -1) {
+          lowesty = vertex[1];
+          aboveVertexIndex = i;
+        } else if (lowesty <= vertex[1]) {
+          lowesty = vertex[1];
+          aboveVertexIndex = i;
+        }
+      }
+    });
+
+    return aboveVertexIndex;
+  }
+
+  var getXForYInRegion = function (region, y) {
+    var aboveVertexIndex = getClosestVertexAbovePoint(region, y);
+
+    // if we're on top of a vertex, just use it's x value. otherwise, interpolate between above and below vertex
+    var x = 0;
+    if (y == getRegionVertex(region, aboveVertexIndex)[1]) {
+      x = getRegionVertex(region, aboveVertexIndex)[0];
+    } else {
+      var aboveVertexX = getRegionVertex(region, aboveVertexIndex)[0];
+      var aboveVertexY = getRegionVertex(region, aboveVertexIndex)[1];
+
+      var belowVertexX = getRegionVertex(region, aboveVertexIndex+1)[0];
+      var belowVertexY = getRegionVertex(region, aboveVertexIndex+1)[1];
+
+      var downFromAboveVertex = y-aboveVertexY;
+      var totalHeightBetweenVertices = belowVertexY-aboveVertexY;
+      var travelMultiplier = downFromAboveVertex/totalHeightBetweenVertices;
+
+      var offsetFromThisVertex = (belowVertexX-aboveVertexX)*travelMultiplier;
+      x = aboveVertexX+offsetFromThisVertex;
+    }
+
+    return x;
+  }
+
   // -- contextBarItem --
   contextBarItem = function(name) {
     this.name = name;
@@ -17,22 +72,6 @@ var contextBar;
     }
   }
 
-  contextBarItem.prototype.getLeftRegionVertex = function(index) {
-      if (typeof this.regionLeft[index] == 'function') {
-        return this.regionLeft[index]();
-      } else {
-        return this.regionLeft[index];
-      }
-  }
-
-  contextBarItem.prototype.getRightRegionVertex = function(index) {
-      if (typeof this.regionRight[index] == 'function') {
-        return this.regionRight[index]();
-      } else {
-        return this.regionRight[index];
-      }
-  }
-
   // -- contextBar --
   contextBar = function(contextBarElem) {
     this.elem = contextBarElem;
@@ -45,87 +84,19 @@ var contextBar;
     $.each(this.items, function(i, item) {
       // CONFUSION WARNING: this is html, so a lower Y value is higher up the page
 
-      // figure out which two vertices we are between, and the x-axis value the edge resides at at our location
+      // figure out how far right and how wide we should be
       var left = 0;
       var width = 0;
 
-      // TODO: we do lots of duplicate stuff for left then right. should be refactored.
-
       // if we are below the last vertex, item shouldn't exist on the bar -- 0 width
-      if (cbBottom > item.getLeftRegionVertex(item.regionLeft.length-1)[1] ||
-          cbBottom > item.getRightRegionVertex(item.regionRight.length-1)[1]) {
+      if (cbBottom > getRegionVertex(item.regionLeft, item.regionLeft.length-1)[1] ||
+      cbBottom > getRegionVertex(item.regionRight, item.regionRight.length-1)[1]) {
         left = 0;
         width = 0;
       } else {
         // We are at a position such that the item should exist on the bar.
-
-        // find the lowest vertex that cbBottom is at or below
-        var leftAboveVertexIndex = -1;
-        var rightAboveVertexIndex = -1;
-
-        var lowesty = -1;
-        $.each(item.regionLeft, function(i, vert) {
-          var vertex = item.getLeftRegionVertex(i);
-
-          if (cbBottom >= vertex[1]) {
-            if (lowesty == -1) {
-              lowesty = vertex[1];
-              leftAboveVertexIndex = i;
-            } else if (lowesty <= vertex[1]) {
-              lowesty = vertex[1];
-              leftAboveVertexIndex = i;
-            }
-          }
-        });
-
-        lowesty = -1;
-        $.each(item.regionRight, function(i, vert) {
-          var vertex = item.getRightRegionVertex(i);
-
-
-          if (cbBottom >= vertex[1]) {
-            if (lowesty == -1) {
-              lowesty = vertex[1];
-              rightAboveVertexIndex = i;
-            } else if (lowesty <= vertex[1]) {
-              lowesty = vertex[1];
-              rightAboveVertexIndex = i;
-            }
-          }
-        });
-
-        // if we're on top of a vertex, just use it's x value. otherwise, interpolate between above and below vertex
-        if (cbBottom == item.getLeftRegionVertex(leftAboveVertexIndex)[1]) {
-          left = item.getLeftRegionVertex(leftAboveVertexIndex)[0];
-        } else {
-          var aboveVertexX = item.getLeftRegionVertex(leftAboveVertexIndex)[0];
-          var aboveVertexY = item.getLeftRegionVertex(leftAboveVertexIndex)[1];
-
-          var belowVertexX = item.getLeftRegionVertex(leftAboveVertexIndex+1)[0];
-          var belowVertexY = item.getLeftRegionVertex(leftAboveVertexIndex+1)[1];
-
-          var downFromThisVertex = cbBottom-aboveVertexY;
-          var travelMultiplier = downFromThisVertex/(belowVertexY-aboveVertexY);
-
-          var offsetFromThisVertex = (belowVertexX-aboveVertexX)*travelMultiplier;
-          left = aboveVertexX+offsetFromThisVertex;
-        }
-
-        if (cbBottom == item.getRightRegionVertex(rightAboveVertexIndex)[1]) {
-          width = item.getRightRegionVertex(rightAboveVertexIndex)[0]-left;
-        } else {
-          var aboveVertexX = item.getRightRegionVertex(rightAboveVertexIndex)[0];
-          var aboveVertexY = item.getRightRegionVertex(rightAboveVertexIndex)[1];
-
-          var belowVertexX = item.getRightRegionVertex(rightAboveVertexIndex+1)[0];
-          var belowVertexY = item.getRightRegionVertex(rightAboveVertexIndex+1)[1];
-
-          var downFromThisVertex = cbBottom-aboveVertexY;
-          var travelMultiplier = downFromThisVertex/(belowVertexY-aboveVertexY);
-
-          var offsetFromThisVertex = (belowVertexX-aboveVertexX)*travelMultiplier;
-          width = (aboveVertexX+offsetFromThisVertex)-left;
-        }
+        left = getXForYInRegion(item.regionLeft, cbBottom);
+        width = getXForYInRegion(item.regionRight, cbBottom)-left;
       }
 
       item.elem.css('left',left);
@@ -136,7 +107,6 @@ var contextBar;
       } else {
         item.elem.css('display','');
       }
-
     });
   }
 
