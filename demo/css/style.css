@@ -1,0 +1,40 @@
+* {padding: 0; margin: 0;}
+
+.context_bar {
+  position: fixed;
+  z-index: 100;
+  height: 50px;
+  width: 100%;
+  background-color: #AAAAAA;
+}
+
+.contextBarItem {
+  background-color: #777777;
+  height: 50px;
+  position: absolute;
+  top: 0;
+}
+
+#context_bar_dummy {
+  height: 50px;
+  width: 100%;
+}
+
+#item_1 {
+  position: absolute;
+  right: 0;
+
+  width: 40%;
+  background-color: #555555;
+}
+
+#item_2 {
+
+  width: 30%;
+  background-color: #555555;
+}
+
+#item_2_p2 {
+  width: 70%;
+  background-color: #555555;
+}
