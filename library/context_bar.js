@@ -123,7 +123,7 @@ var contextBar;
   contextBar.prototype.addItem = function(item) {
     item.isAdded = 1;
     item.parentContextBar = this;
-    item.elem = $('<div class="contextBarItem">'+item.name+'</div>').appendTo(this.contextBarElem);
+    item.elem = $('<div style="position: absolute;" class="contextBarItem">'+item.name+'</div>').appendTo(this.contextBarElem);
     this.items.push(item);
     this.update();
   }
