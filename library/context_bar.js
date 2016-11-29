@@ -20,12 +20,12 @@ var contextBar;
 
   // -- contextBar --
   contextBar = function(contextBarElem) {
-    this.contextBarElem = contextBarElem;
+    this.elem = contextBarElem;
     this.items = [];
   }
 
   contextBar.prototype.update = function() {
-    var cbBottom = this.contextBarElem.offset().top+this.contextBarElem.height();
+    var cbBottom = this.elem.offset().top+this.elem.height();
 
     $.each(this.items, function(i, item) {
       // CONFUSION WARNING: this is html, so a lower Y value is higher up the page
@@ -123,7 +123,7 @@ var contextBar;
   contextBar.prototype.addItem = function(item) {
     item.isAdded = 1;
     item.parentContextBar = this;
-    item.elem = $('<div style="position: absolute;" class="contextBarItem">'+item.name+'</div>').appendTo(this.contextBarElem);
+    item.elem = $('<div style="position: absolute;" class="contextBarItem">'+item.name+'</div>').appendTo(this.elem);
     this.items.push(item);
     this.update();
   }
