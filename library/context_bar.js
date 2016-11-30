@@ -17,6 +17,22 @@ var contextBar;
     this.leftOffsets[vertexIndex] = offset;
   }
 
+  contextBarItem.prototype.offsetElemTopLeft = function(elemIndex, offset) {
+    this.setLeftVertexOffset(elemIndex*2, offset);
+  }
+
+  contextBarItem.prototype.offsetElemBottomLeft = function(elemIndex, offset) {
+    this.setLeftVertexOffset((elemIndex*2)+1, offset);
+  }
+
+  contextBarItem.prototype.offsetElemTopRight = function(elemIndex, offset) {
+    this.setRightVertexOffset(elemIndex*2, offset);
+  }
+
+  contextBarItem.prototype.offsetElemBottomRight = function(elemIndex, offset) {
+    this.setRightVertexOffset((elemIndex*2)+1, offset);
+  }
+
   contextBarItem.prototype.setRegion = function(left, right) {
     this.regionLeft = left;
     this.regionRight = right;
