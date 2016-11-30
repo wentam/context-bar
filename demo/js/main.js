@@ -9,8 +9,6 @@ function init() {
   cb_item_1.setRegionAsElems([$('#item_1')]);
 
   var cb_item_2 = new contextBarItem("Left item -- fun shape");
-  var i2 = $('#item_2');
-  var i22 = $('#item_2_p2');
   cb_item_2.setRegionAsElems([$('#item_2'),$('#item_2_p2')]);
 
   // add items to bar
