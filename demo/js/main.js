@@ -6,14 +6,7 @@ function init() {
   // Potentially allow for region to be specified as element. Makes squares easy.
   context_bar = $('#context_bar_1').initContextBar();
   var cb_item_1 = new contextBarItem("Right item");
-  cb_item_1.setRegion(
-                      // left side
-                      [function(){return [$('#item_1').offset().left, $('#item_1').offset().top];},
-                       function(){return [$('#item_1').offset().left, $('#item_1').offset().top+$('#item_1').height()];}],
-
-                      // right side
-                      [[$(window).width(), $('#item_1').offset().top],
-                       [$(window).width(), $('#item_1').offset().top+$('#item_1').height()]]);
+  cb_item_1.setRegionAsElem($('#item_1'));
 
   var cb_item_2 = new contextBarItem("Left item -- fun shape");
   var i2 = $('#item_2');

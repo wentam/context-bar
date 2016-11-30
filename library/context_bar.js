@@ -72,6 +72,16 @@ var contextBar;
     }
   }
 
+  contextBarItem.prototype.setRegionAsElem = function(elem) {
+    var regionLeft = [function(){return [elem.offset().left, elem.offset().top]},
+                       function(){return [elem.offset().left, elem.offset().top+elem.height()]}];
+
+    var regionRight = [function(){return [elem.offset().left+elem.width(), elem.offset().top]},
+                        function(){return [elem.offset().left+elem.width(), elem.offset().top+elem.height()]}];
+
+    return this.setRegion(regionLeft, regionRight);
+  }
+
   // -- contextBar --
   contextBar = function(contextBarElem) {
     this.elem = contextBarElem;
