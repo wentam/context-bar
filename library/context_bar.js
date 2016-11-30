@@ -146,14 +146,15 @@ var contextBar;
       cb.removeItem(item);
     });
 
-    $(window).off("resize load scroll", this.update);
+    $(window).off("resize load scroll", this.update_func);
   }
 
   // -- init --
   $.fn.initContextBar = function() {
     var cb = new contextBar(this);
+    cb.update_func = cb.update.bind(cb);
     cb.update();
-    $(window).on("resize load scroll", cb.update.bind(cb));
+    $(window).on("resize load scroll", cb.update_func);
     return cb;
   }
 }(jQuery));
