@@ -72,14 +72,19 @@ var contextBar;
     }
   }
 
-  contextBarItem.prototype.setRegionAsElem = function(elem) {
-    var regionLeft = [function(){return [elem.offset().left, elem.offset().top]},
-                       function(){return [elem.offset().left, elem.offset().top+elem.height()]}];
+  contextBarItem.prototype.setRegionAsElems = function(elems) {
+    var left = [];
+    var right = [];
 
-    var regionRight = [function(){return [elem.offset().left+elem.width(), elem.offset().top]},
-                        function(){return [elem.offset().left+elem.width(), elem.offset().top+elem.height()]}];
+    $.each(elems, function (i, elem) {
+      left.push(function(){return [elem.offset().left, elem.offset().top]});
+      left.push(function(){return [elem.offset().left, elem.offset().top+elem.height()]});
 
-    return this.setRegion(regionLeft, regionRight);
+      right.push(function(){return [elem.offset().left+elem.width(), elem.offset().top]});
+      right.push(function(){return [elem.offset().left+elem.width(), elem.offset().top+elem.height()]});
+    });
+
+    return this.setRegion(left, right);
   }
 
   // -- contextBar --

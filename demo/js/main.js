@@ -1,25 +1,19 @@
 var context_bar;
 
 function init() {
-  // Specify regions with polygonal lines. One for left, one for right.
-  // Could potentially allow for curves to be specified
-  // Potentially allow for region to be specified as element. Makes squares easy.
+  // init context bar
   context_bar = $('#context_bar_1').initContextBar();
+
+  // set up items
   var cb_item_1 = new contextBarItem("Right item");
-  cb_item_1.setRegionAsElem($('#item_1'));
+  cb_item_1.setRegionAsElems([$('#item_1')]);
 
   var cb_item_2 = new contextBarItem("Left item -- fun shape");
   var i2 = $('#item_2');
   var i22 = $('#item_2_p2');
-  cb_item_2.setRegion(
-                      // left side
-                      [[0,i2.offset().top],[0,i22.offset().top+i22.height()]],
+  cb_item_2.setRegionAsElems([$('#item_2'),$('#item_2_p2')]);
 
-                      // right side
-                      [[i2.width(),i2.offset().top],[i2.width(), i22.offset().top],
-                       [i22.width(), i22.offset().top], [i22.width(), i22.offset().top+i22.height()]]);
-
-
+  // add items to bar
   context_bar.addItem(cb_item_1);
   context_bar.addItem(cb_item_2);
 }
