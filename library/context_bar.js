@@ -48,11 +48,11 @@ var contextBar;
     var right = [];
 
     $.each(elems, function (i, elem) {
-      left.push(function(){return [elem.offset().left, elem.offset().top]});
-      left.push(function(){return [elem.offset().left, elem.offset().top+elem.height()]});
+      left.push(function(){return [elem.offset().left, elem.offset().top]}.bind(elem));
+      left.push(function(){return [elem.offset().left, elem.offset().top+elem.height()]}.bind(elem));
 
-      right.push(function(){return [elem.offset().left+elem.width(), elem.offset().top]});
-      right.push(function(){return [elem.offset().left+elem.width(), elem.offset().top+elem.height()]});
+      right.push(function(){return [elem.offset().left+elem.width(), elem.offset().top]}.bind(elem));
+      right.push(function(){return [elem.offset().left+elem.width(), elem.offset().top+elem.height()]}.bind(elem));
     });
 
     return this.setRegion(left, right);
@@ -91,6 +91,11 @@ var contextBar;
     } else {
       result = region[index];
     }
+
+    if (result == null) {
+      return null;
+    }
+
     result[0] += offset;
 
     return result;
@@ -199,7 +204,11 @@ var contextBar;
   contextBar.prototype.addItem = function(item) {
     item.isAdded = 1;
     item.parentContextBar = this;
-    item.elem = $('<div style="position: absolute;" class="contextBarItem">'+item.name+'</div>').appendTo(this.elem);
+    item.elem = $('<div class="contextBarItem"><div class="name">'+item.name+'</div></div>').appendTo(this.elem);
+
+    item.elem.css('position','absolute');
+    item.elem.css('top',0);
+
     this.items.push(item);
     this.update();
   }
