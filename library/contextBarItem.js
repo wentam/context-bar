@@ -129,6 +129,8 @@ var contextBarItem;
       }
     });
 
+    if (aboveVertexIndex < 0) aboveVertexIndex = 0;
+
     return aboveVertexIndex;
   }
 
