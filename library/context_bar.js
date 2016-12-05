@@ -3,10 +3,12 @@ var contextBar;
 
 (function ($) {
   // -- contextBarItem --
-  contextBarItem = function(name) {
+  contextBarItem = function(name, height, color) {
     this.name = name;
     this.rightOffsets = {};
     this.leftOffsets = {};
+    this.height = height;
+    this.color = color;
   }
 
   contextBarItem.prototype.setRightVertexOffset = function(vertexIndex, offset) {
@@ -131,6 +133,31 @@ var contextBar;
     return aboveVertexIndex;
   }
 
+  contextBarItem.prototype.getXYRatioForYInRegion = function (regionId, y) {
+    var region;
+    if (regionId == "left") {
+      region = this.regionLeft;
+    } else {
+      region = this.regionRight;
+    }
+
+    var aboveVertexIndex = this.getClosestVertexAbovePoint(regionId, y);
+
+    // if the vertex below doesn't exist, return 0
+    if (aboveVertexIndex+1 >= region.length) {
+      return 0;
+    }
+
+    // get above and below vertex
+    var aboveVertex = this.getRegionVertex(regionId, aboveVertexIndex);
+    var belowVertex = this.getRegionVertex(regionId, aboveVertexIndex+1);
+
+    var xDiff = belowVertex[0]-aboveVertex[0];
+    var yDiff = belowVertex[1]-aboveVertex[1];
+
+    return xDiff/yDiff;
+  }
+
   contextBarItem.prototype.getXForYInRegion = function (regionId, y) {
     var region;
     if (regionId == "left") {
@@ -198,16 +225,69 @@ var contextBar;
       } else {
         item.elem.css('display','');
       }
+
+      // render left and right edge angles
+      var widthReduce = 0;
+
+      item.leftEdgeElem.css('width',width/2);
+      item.rightEdgeElem.css('width',width/2);
+
+      // left
+      var leftXYRatio = item.getXYRatioForYInRegion("left", cbBottom);
+      if (leftXYRatio > 0) {
+        item.leftEdgeElem.css('border-bottom','');
+        item.leftEdgeElem.css('border-top',item.height+' solid '+item.color);
+        var borderLeftWidth = parseInt(item.leftEdgeElem.css('border-top-width'),10)*leftXYRatio;
+        item.leftEdgeElem.css('border-left',borderLeftWidth+'px solid transparent');
+        item.leftEdgeElem.css('left',left-borderLeftWidth);
+      } else {
+        item.leftEdgeElem.css('border-top','');
+        item.leftEdgeElem.css('border-bottom',item.height+' solid '+item.color);
+        var borderLeftWidth = parseInt(item.leftEdgeElem.css('border-bottom-width'),10)*Math.abs(leftXYRatio);
+        item.leftEdgeElem.css('border-left',borderLeftWidth+'px solid transparent');
+        item.leftEdgeElem.css('left',left);
+        item.elem.css('left',left+borderLeftWidth);
+        widthReduce += borderLeftWidth;
+      }
+
+      var rightXYRatio = item.getXYRatioForYInRegion("right", cbBottom);
+      if (rightXYRatio > 0) {
+        item.rightEdgeElem.css('border-top','');
+        item.rightEdgeElem.css('border-bottom',item.height+ ' solid '+item.color);
+        var borderRightWidth = parseInt(item.rightEdgeElem.css('border-bottom-width'),10)*rightXYRatio;
+        item.rightEdgeElem.css('border-right',borderRightWidth+'px solid transparent');
+        item.rightEdgeElem.css('left',(left+(width/2))-borderRightWidth);
+        widthReduce += borderRightWidth;
+      } else {
+        item.rightEdgeElem.css('border-bottom','');
+        item.rightEdgeElem.css('border-top',item.height+' solid '+item.color);
+        var borderRightWidth = parseInt(item.rightEdgeElem.css('border-top-width'),10)*Math.abs(rightXYRatio);
+        item.rightEdgeElem.css('border-right',borderRightWidth+'px solid transparent');
+        item.rightEdgeElem.css('left',left+(width/2));
+      }
+
+      item.elem.css('width', width-widthReduce);
     });
   }
 
   contextBar.prototype.addItem = function(item) {
     item.isAdded = 1;
     item.parentContextBar = this;
-    item.elem = $('<div class="contextBarItem"><div class="name">'+item.name+'</div></div>').appendTo(this.elem);
 
+    item.elem = $('<div class="contextBar_item"><div class="name">'+item.name+'</div></div>').appendTo(this.elem);
     item.elem.css('position','absolute');
     item.elem.css('top',0);
+    item.elem.css('z-index', 2);
+
+    item.leftEdgeElem = $('<div class="contextBar_itemLeftEdge"></div>').appendTo(this.elem);
+    item.leftEdgeElem.css('position','absolute');
+    item.leftEdgeElem.css('z-index',1);
+    item.leftEdgeElem.css('top',0);
+
+    item.rightEdgeElem = $('<div class="contextBar_itemRightEdge"></div>').appendTo(this.elem);
+    item.rightEdgeElem.css('position','absolute');
+    item.rightEdgeElem.css('z-index',1);
+    item.rightEdgeElem.css('top',0);
 
     this.items.push(item);
     this.update();

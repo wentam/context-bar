@@ -8,9 +8,9 @@
   background-color: #AAAAAA;
 }
 
-.contextBarItem {
-  background-color: #777;
-  height: 50px;
+.contextBar_item {
+/*  background-color: #777;
+ height: 50px; */
 }
 
 #context_bar_dummy {
