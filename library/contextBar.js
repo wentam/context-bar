@@ -8,7 +8,7 @@ var contextBar;
   }
 
   contextBar.prototype.update = function() {
-    var cbBottom = this.elem.offset().top+this.elem.height();
+    var cbBottom = this.elem.offset().top+this.elem.outerHeight();
 
     $.each(this.items, function(i, item) {
       // CONFUSION WARNING: this is html, so a lower Y value is higher up the page
@@ -40,8 +40,6 @@ var contextBar;
       // render left and right edge angles
       var widthReduce = 0;
 
-      item.leftEdgeElem.css('width',width/2);
-      item.rightEdgeElem.css('width',width/2);
 
       // left
       var leftXYRatio = item.getXYRatioForYInRegion("left", cbBottom);
@@ -51,12 +49,14 @@ var contextBar;
         var borderLeftWidth = parseInt(item.leftEdgeElem.css('border-top-width'),10)*leftXYRatio;
         item.leftEdgeElem.css('border-left',borderLeftWidth+'px solid transparent');
         item.leftEdgeElem.css('left',left-borderLeftWidth);
+        item.leftEdgeElem.css('width',(width/2)+borderLeftWidth);
       } else {
         item.leftEdgeElem.css('border-top','');
         item.leftEdgeElem.css('border-bottom',item.height+' solid '+item.color);
         var borderLeftWidth = parseInt(item.leftEdgeElem.css('border-bottom-width'),10)*Math.abs(leftXYRatio);
         item.leftEdgeElem.css('border-left',borderLeftWidth+'px solid transparent');
         item.leftEdgeElem.css('left',left);
+        item.leftEdgeElem.css('width',width/2);
         item.elem.css('left',left+borderLeftWidth);
         widthReduce += borderLeftWidth;
       }
@@ -68,6 +68,7 @@ var contextBar;
         var borderRightWidth = parseInt(item.rightEdgeElem.css('border-bottom-width'),10)*rightXYRatio;
         item.rightEdgeElem.css('border-right',borderRightWidth+'px solid transparent');
         item.rightEdgeElem.css('left',(left+(width/2))-borderRightWidth);
+        item.rightEdgeElem.css('width',(width/2)+borderRightWidth);
         widthReduce += borderRightWidth;
       } else {
         item.rightEdgeElem.css('border-bottom','');
@@ -75,6 +76,7 @@ var contextBar;
         var borderRightWidth = parseInt(item.rightEdgeElem.css('border-top-width'),10)*Math.abs(rightXYRatio);
         item.rightEdgeElem.css('border-right',borderRightWidth+'px solid transparent');
         item.rightEdgeElem.css('left',left+(width/2));
+        item.rightEdgeElem.css('width',width/2);
       }
 
       item.elem.css('width', width-widthReduce);
