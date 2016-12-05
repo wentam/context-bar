@@ -38,8 +38,6 @@ var contextBar;
       }
 
       // render left and right edge angles
-      var widthReduce = 0;
-
 
       // left
       var leftXYRatio = item.getXYRatioForYInRegion("left", cbBottom);
@@ -58,7 +56,6 @@ var contextBar;
         item.leftEdgeElem.css('left',left);
         item.leftEdgeElem.css('width',width/2);
         item.elem.css('left',left+borderLeftWidth);
-        widthReduce += borderLeftWidth;
       }
 
       var rightXYRatio = item.getXYRatioForYInRegion("right", cbBottom);
@@ -69,7 +66,6 @@ var contextBar;
         item.rightEdgeElem.css('border-right',borderRightWidth+'px solid transparent');
         item.rightEdgeElem.css('left',(left+(width/2))-borderRightWidth);
         item.rightEdgeElem.css('width',(width/2)+borderRightWidth);
-        widthReduce += borderRightWidth;
       } else {
         item.rightEdgeElem.css('border-bottom','');
         item.rightEdgeElem.css('border-top',item.height+' solid '+item.color);
@@ -78,8 +74,6 @@ var contextBar;
         item.rightEdgeElem.css('left',left+(width/2));
         item.rightEdgeElem.css('width',width/2);
       }
-
-      item.elem.css('width', width-widthReduce);
     });
   }
 
