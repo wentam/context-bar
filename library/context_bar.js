@@ -51,10 +51,10 @@ var contextBar;
 
     $.each(elems, function (i, elem) {
       left.push(function(){return [elem.offset().left, elem.offset().top]}.bind(elem));
-      left.push(function(){return [elem.offset().left, elem.offset().top+elem.height()]}.bind(elem));
+      left.push(function(){return [elem.offset().left, elem.offset().top+elem.outerHeight()]}.bind(elem));
 
-      right.push(function(){return [elem.offset().left+elem.width(), elem.offset().top]}.bind(elem));
-      right.push(function(){return [elem.offset().left+elem.width(), elem.offset().top+elem.height()]}.bind(elem));
+      right.push(function(){return [elem.offset().left+elem.outerWidth(), elem.offset().top]}.bind(elem));
+      right.push(function(){return [elem.offset().left+elem.outerWidth(), elem.offset().top+elem.outerHeight()]}.bind(elem));
     });
 
     return this.setRegion(left, right);
