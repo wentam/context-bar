@@ -1,13 +1,17 @@
 var contextBarItem;
 
+// -- contextBarItem --
 (function ($) {
-  // -- contextBarItem --
   contextBarItem = function(name, height, color) {
     this.name = name;
     this.rightOffsets = {};
     this.leftOffsets = {};
     this.height = height;
     this.color = color;
+
+    this.elem = $('<div class="contextBar_item"><div class="name">'+this.name+'</div></div>');
+    this.leftEdgeElem = $('<div class="contextBar_itemLeftEdge"></div>');
+    this.rightEdgeElem = $('<div class="contextBar_itemRightEdge"></div>');
   }
 
   contextBarItem.prototype.setRightVertexOffset = function(vertexIndex, offset) {
@@ -49,11 +53,11 @@ var contextBarItem;
     var right = [];
 
     $.each(elems, function (i, elem) {
-      left.push(function(){return [elem.offset().left, elem.offset().top]}.bind(elem));
-      left.push(function(){return [elem.offset().left, elem.offset().top+elem.outerHeight()]}.bind(elem));
+      left.push(function(){return [Math.round(elem.offset().left), Math.round(elem.offset().top)]}.bind(elem));
+      left.push(function(){return [Math.round(elem.offset().left), Math.round(elem.offset().top+elem.outerHeight())]}.bind(elem));
 
-      right.push(function(){return [elem.offset().left+elem.outerWidth(), elem.offset().top]}.bind(elem));
-      right.push(function(){return [elem.offset().left+elem.outerWidth(), elem.offset().top+elem.outerHeight()]}.bind(elem));
+      right.push(function(){return [Math.round(elem.offset().left+elem.outerWidth()), Math.round(elem.offset().top)]}.bind(elem));
+      right.push(function(){return [Math.round(elem.offset().left+elem.outerWidth()), Math.round(elem.offset().top+elem.outerHeight())]}.bind(elem));
     });
 
     return this.setRegion(left, right);
@@ -118,11 +122,11 @@ var contextBarItem;
     $.each(region, function(i, vert) {
       var vertex = item.getRegionVertex(regionId, i);
 
-      if (y >= vertex[1]) {
+      if (Math.round(y) >= Math.round(vertex[1])) {
         if (lowesty == -1) {
-          lowesty = vertex[1];
+          lowesty = Math.round(vertex[1]);
           aboveVertexIndex = i;
-        } else if (lowesty <= vertex[1]) {
+        } else if (lowesty <= Math.round(vertex[1])) {
           lowesty = vertex[1];
           aboveVertexIndex = i;
         }
