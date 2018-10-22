@@ -123,6 +123,7 @@ var contextBar;
 
   contextBar.prototype.destroy = function() {
     var cb = this;
+    cb.breakloop = true;
     $.each(this.items, function(i, item) {
       cb.removeItem(item);
     });
@@ -150,6 +151,9 @@ var contextBar;
     }
 
     function loop() {
+      if (cb.breakloop) {
+        return;
+      }
       var scrollTop = $window.scrollTop();
       if (lastScrollTop === scrollTop) {
        raf(loop);
